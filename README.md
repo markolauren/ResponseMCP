@@ -4,10 +4,9 @@ A Model Context Protocol (MCP) server that enables agentic SecOps using orchestr
 
 ## Overview
 
-This MCP server exposes Microsoft Defender XDR capabilities as tools for agentic SecOps workflows. Security analysts use natural language through orchestrators like GitHub Copilot to manage incidents, isolate compromised devices, run antivirus scans, collect forensic packages, and execute incident response actions.
+This MCP server exposes Microsoft Defender XDR capabilities as tools for agentic SecOps workflows. Security analysts use natural language through orchestrators like GitHub Copilot to manage incidents, isolate compromised devices, run antivirus scans, collect forensic packages, and execute incident response actions. 
 
-<img width="1270" height="936" alt="image" src="https://github.com/user-attachments/assets/daa2f5cf-3f43-4c6f-98a6-1b6aeb9706c6" />
-
+[Showcase - https://markolauren.github.io/ResponseMCP/response-mcp-showcase.html](https://markolauren.github.io/ResponseMCP/response-mcp-showcase.html)
 
 ### Works in Tandem with Sentinel MCP
 

@@ -8,6 +8,8 @@ This MCP server exposes Microsoft Defender XDR capabilities as tools for agentic
 
 [Showcase - https://markolauren.github.io/ResponseMCP/response-mcp-showcase.html](https://markolauren.github.io/ResponseMCP/response-mcp-showcase.html)
 
+<img width="1666" height="973" alt="Screenshot 2026-01-28 230416" src="https://github.com/user-attachments/assets/3d439462-0b7d-4a56-908d-a51c9ea08bb1" />
+
 ### Works in Tandem with Sentinel MCP
 
 This Response MCP server works in tandem with the [Sentinel MCP server](https://learn.microsoft.com/en-us/azure/sentinel/datalake/sentinel-mcp-get-started) to provide a complete agentic SecOps workflow:

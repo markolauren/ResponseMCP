@@ -1,0 +1,20 @@
+{
+	"servers": {
+		"Response MCP": {
+			"type": "sse",
+			"url": "https://vetmcp-mcp.lemonsand-ed01892f.westeurope.azurecontainerapps.io/sse",
+			"headers": {
+				"X-API-Key": "MCP_API_KEY"
+			}
+		},
+		"Sentinel MCP-Data Exploration": {
+			"url": "https://sentinel.microsoft.com/mcp/data-exploration",
+			"type": "http"
+		},
+		"Sentinel MCP-Triage": {
+			"url": "https://sentinel.microsoft.com/mcp/triage",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}

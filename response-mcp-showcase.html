@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Response MCP - Agentic SOC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #06b6d4;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --sentinel: #0078d4;
+            --dark: #0f172a;
+            --darker: #020617;
+            --card: #1e293b;
+            --card-border: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-orb-1 {
+            top: -200px;
+            right: -200px;
+            background: var(--primary);
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .glow-orb-2 {
+            bottom: -200px;
+            left: -200px;
+            background: var(--secondary);
+            animation: float 20s ease-in-out infinite reverse;
+        }
+
+        .glow-orb-3 {
+            top: 50%;
+            left: 50%;
+            background: var(--sentinel);
+            animation: float 25s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* Section Titles */
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        /* Two MCP Section */
+        .two-mcp {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, transparent, rgba(0, 120, 212, 0.03), transparent);
+        }
+
+        .mcp-comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        @media (max-width: 968px) {
+            .mcp-comparison {
+                grid-template-columns: 1fr;
+            }
+            .mcp-connector {
+                transform: rotate(90deg);
+            }
+        }
+
+        .mcp-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .mcp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .mcp-card.sentinel {
+            border-color: var(--sentinel);
+        }
+
+        .mcp-card.response {
+            border-color: var(--primary);
+        }
+
+        .mcp-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mcp-card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .mcp-card-icon.sentinel {
+            background: linear-gradient(135deg, rgba(0, 120, 212, 0.2), rgba(0, 120, 212, 0.1));
+            border: 1px solid var(--sentinel);
+        }
+
+        .mcp-card-icon.response {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.1));
+            border: 1px solid var(--primary);
+        }
+
+        .mcp-card-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .mcp-card-header h3 span {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .mcp-card > p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .mcp-capabilities {
+            list-style: none;
+        }
+
+        .mcp-capabilities li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--dark);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .mcp-capabilities li:hover {
+            border-color: var(--primary);
+        }
+
+        .cap-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .cap-icon.blue {
+            background: rgba(0, 120, 212, 0.1);
+            border: 1px solid rgba(0, 120, 212, 0.2);
+        }
+
+        .cap-icon.red {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .cap-icon.yellow {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .cap-icon.purple {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .cap-icon.cyan {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .cap-icon.green {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .mcp-connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .connector-arrow {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: arrowPulse 1.5s ease-in-out infinite;
+        }
+
+        .connector-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% { opacity: 0.5; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(5px); }
+        }
+
+        /* Capabilities */
+        .capabilities {
+            padding: 6rem 0;
+        }
+
+        .cap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .cap-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .cap-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+
+        .cap-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .cap-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .cap-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .cap-card .params {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .param-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Consolas', monospace;
+        }
+
+        /* Case Study */
+        .case-study {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, transparent, rgba(239, 68, 68, 0.03), transparent);
+        }
+
+        .case-container {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .case-header {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(245, 158, 11, 0.1));
+            padding: 2rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .case-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: var(--danger);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .case-header h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .case-header p {
+            color: var(--text-muted);
+        }
+
+        .case-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .case-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .case-meta-item span:first-child {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .case-meta-item strong {
+            color: var(--text);
+        }
+
+        .case-body {
+            padding: 2rem;
+        }
+
+        .evidence-section {
+            margin-bottom: 2rem;
+        }
+
+        .evidence-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .evidence-item {
+            background: var(--dark);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .evidence-item label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .evidence-item code {
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+
+        .evidence-item.danger code {
+            color: var(--danger);
+        }
+
+        .evidence-item.warning code {
+            color: var(--warning);
+        }
+
+        .mitre-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .mitre-tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: var(--danger);
+        }
+
+        /* Response Actions */
+        .response-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .response-section h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .action-timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--success), var(--primary));
+        }
+
+        .action-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .action-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.5rem;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--success);
+            border: 3px solid var(--darker);
+        }
+
+        .action-item.selected::before {
+            background: var(--success);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+        }
+
+        .action-item.not-selected::before {
+            background: var(--card-border);
+        }
+
+        .action-item h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-item h5 .status {
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .action-item h5 .status.selected {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .action-item h5 .status.skipped {
+            background: rgba(100, 116, 139, 0.2);
+            color: var(--text-muted);
+        }
+
+        .action-item p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-item .reasoning {
+            background: var(--dark);
+            border-left: 3px solid var(--primary);
+            padding: 0.75rem 1rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .action-item .reasoning strong {
+            color: var(--text);
+        }
+
+        /* Decision Path */
+        .decision-path {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.03), transparent);
+        }
+
+        .flowchart {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .flow-number {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+        }
+
+        .flow-number.priority-1 { background: linear-gradient(135deg, var(--danger), #dc2626); }
+        .flow-number.priority-2 { background: linear-gradient(135deg, var(--warning), #d97706); }
+        .flow-number.priority-3 { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+        .flow-number.priority-4 { background: linear-gradient(135deg, var(--secondary), #0891b2); }
+
+        .flow-connector {
+            position: absolute;
+            left: 29px;
+            top: 60px;
+            width: 2px;
+            height: caf(100% + 1rem);
+            background: linear-gradient(180deg, var(--card-border), transparent);
+        }
+
+        .flow-content {
+            flex: 1;
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .flow-step:hover .flow-content {
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .flow-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .flow-content p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .flow-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .flow-tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: var(--primary);
+        }
+
+        .flow-tag.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .flow-tag.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .flow-tag.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        /* Stats */
+        .stats {
+            padding: 4rem 0;
+            border-top: 1px solid var(--card-border);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-item p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Code Block */
+        .code-section {
+            padding: 6rem 0;
+        }
+
+        .code-block {
+            background: var(--dark);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: var(--card);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-dot.red { background: #ef4444; }
+        .code-dot.yellow { background: #f59e0b; }
+        .code-dot.green { background: #10b981; }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        .code-comment { color: #6b7280; }
+        .code-string { color: #10b981; }
+        .code-keyword { color: #f59e0b; }
+        .code-function { color: #6366f1; }
+        .code-number { color: #06b6d4; }
+
+        /* Footer */
+        footer {
+            padding: 4rem 0 2rem;
+            text-align: center;
+            border-top: 1px solid var(--card-border);
+        }
+
+        footer p {
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .flow-step {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .flow-connector {
+                display: none;
+            }
+
+            nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    Response MCP
+                </div>
+                <nav>
+                    <a href="#two-mcp">MCP Ecosystem</a>
+                    <a href="#capabilities">Capabilities</a>
+                    <a href="#case-study">Case Study</a>
+                    <a href="#decision-path">Decision Path</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">
+                <span>⚡</span>
+                Model Context Protocol for Agentic SecOps
+            </div>
+            <h1>Intelligent Incident Response using Response MCP</h1>
+            <p>Empower AI agents with direct access to Defender XDR's incident management and response capabilities. Investigate, analyze, and respond to security incidents through natural language. Built for autonomous security operations.</p>
+            <div class="hero-buttons">
+                <a href="#case-study" class="btn btn-primary">
+                    <span>🔍</span> See Real Case Study
+                </a>
+                <a href="#two-mcp" class="btn btn-secondary">
+                    <span>🔗</span> MCP Ecosystem
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Two MCP Section -->
+    <section class="two-mcp" id="two-mcp">
+        <div class="container">
+            <div class="section-title">
+                <h2>Agentic SOC</h2>
+                <p>Two specialized MCPs working together for end-to-end autonomous security operations</p>
+            </div>
+            <div class="mcp-comparison">
+                <div class="mcp-card sentinel">
+                    <div class="mcp-card-header">
+                        <div class="mcp-card-icon sentinel">🔭</div>
+                        <h3>Sentinel MCP <span>Triage, Data Exploration & Threat Hunting</span></h3>
+                    </div>
+                    <p>Query and analyze security data across Microsoft Sentinel & Defender XDR. The foundation for AI agents to understand what happened and identify threats.</p>
+                    <ul class="mcp-capabilities">
+                        <li>
+                            <div class="cap-icon blue">📊</div>
+                            <div>
+                                <strong>Advanced hunting</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">Run advanced hunting queries across security tables</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="cap-icon blue">🔍</div>
+                            <div>
+                                <strong>Data lake exploration</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">Explore and investigate data lake</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="cap-icon blue">📋</div>
+                            <div>
+                                <strong>Incident Investigation</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">List, filter, and analyze security incidents</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="cap-icon blue">👤</div>
+                            <div>
+                                <strong>Entity Analysis</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">Analyze users, URLs, and threat indicators</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mcp-connector">
+                    <span class="connector-arrow">→</span>
+                    <span class="connector-label">DETECT → RESPOND</span>
+                    <span class="connector-arrow">→</span>
+                </div>
+
+                <div class="mcp-card response">
+                    <div class="mcp-card-header">
+                        <div class="mcp-card-icon response">🛡️</div>
+                        <h3>Response MCP <span>Automated Response & Remediation</span></h3>
+                    </div>
+                    <p>Execute response actions across endpoints and identities through Microsoft Defender. Turn threat intelligence into immediate defensive action.</p>
+                    <ul class="mcp-capabilities">
+                        <li>
+                            <div class="cap-icon red">🛑</div>
+                            <div>
+                                <strong>Endpoint Response</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">Stop processes, quarantine files, isolate devices</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="cap-icon yellow">🔒</div>
+                            <div>
+                                <strong>Code Execution Control</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">Restrict to Microsoft-signed applications</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="cap-icon purple">👤</div>
+                            <div>
+                                <strong>Identity Response</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">Disable accounts, force password resets</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="cap-icon cyan">📊</div>
+                            <div>
+                                <strong>Incident Management</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">Classify, assign, comment, and track incidents</small>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="cap-icon green">📦</div>
+                            <div>
+                                <strong>Forensic Collection</strong>
+                                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">Gather investigation packages from devices</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Capabilities -->
+    <section class="capabilities" id="capabilities">
+        <div class="container">
+            <div class="section-title">
+                <h2>Complete Response Capabilities</h2>
+                <p>Every tool available to your AI agents through the Response MCP server</p>
+            </div>
+            
+            <h3 style="margin-bottom: 1.5rem; color: var(--text); font-size: 1.5rem;">🛡️ Endpoint Response Actions</h3>
+            <div class="cap-grid">
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon red">🛑</div>
+                        <h4>Stop & Quarantine File</h4>
+                    </div>
+                    <p>Stop running processes and quarantine malicious files. Requires the SHA1 hash from incident evidence.</p>
+                    <div class="params">
+                        <span class="param-tag">sha1 (required)</span>
+                        <span class="param-tag">device_id | device_name</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon cyan">🚫</div>
+                        <h4>Isolate Device</h4>
+                    </div>
+                    <p>Isolate device from network. Full isolation blocks all connections; Selective allows Outlook/Teams/Skype.</p>
+                    <div class="params">
+                        <span class="param-tag">device_id | device_name</span>
+                        <span class="param-tag">isolation_type: Full | Selective</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon green">🔌</div>
+                        <h4>Release Device</h4>
+                    </div>
+                    <p>Remove device from isolation, restoring full network connectivity after threat containment.</p>
+                    <div class="params">
+                        <span class="param-tag">device_id | device_name</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon yellow">🔒</div>
+                        <h4>Restrict Code Execution</h4>
+                    </div>
+                    <p>Restrict application execution to Microsoft-signed binaries only. Blocks attacker tools from running.</p>
+                    <div class="params">
+                        <span class="param-tag">device_id | device_name</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon green">🔓</div>
+                        <h4>Remove Code Restriction</h4>
+                    </div>
+                    <p>Remove code execution restrictions, allowing all applications to run again after remediation.</p>
+                    <div class="params">
+                        <span class="param-tag">device_id | device_name</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon purple">🔍</div>
+                        <h4>Run Antivirus Scan</h4>
+                    </div>
+                    <p>Initiate Microsoft Defender scan. Quick scan checks common locations, Full scans entire disk.</p>
+                    <div class="params">
+                        <span class="param-tag">device_id | device_name</span>
+                        <span class="param-tag">scan_type: Quick | Full</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon blue">📦</div>
+                        <h4>Collect Investigation Package</h4>
+                    </div>
+                    <p>Collect forensic package with system info, logs, memory dumps, and diagnostic data.</p>
+                    <div class="params">
+                        <span class="param-tag">device_id | device_name</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon purple">📋</div>
+                        <h4>Get Machine Actions</h4>
+                    </div>
+                    <p>List recent response actions taken on machines. Filter by device, action type, or status.</p>
+                    <div class="params">
+                        <span class="param-tag">device_id (optional)</span>
+                        <span class="param-tag">action_type (optional)</span>
+                        <span class="param-tag">status (optional)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon cyan">🚫</div>
+                        <h4>Isolate Multiple Devices</h4>
+                    </div>
+                    <p>Bulk isolate multiple devices in a single operation. Supports up to 100 devices at once.</p>
+                    <div class="params">
+                        <span class="param-tag">device_ids (array)</span>
+                        <span class="param-tag">isolation_type: Full | Selective</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin: 3rem 0 1.5rem; color: var(--text); font-size: 1.5rem;">👤 Identity Response Actions</h3>
+            <div class="cap-grid">
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon red">🚫</div>
+                        <h4>Disable AD Account</h4>
+                    </div>
+                    <p>Disable compromised Active Directory account via Microsoft Defender for Identity integration.</p>
+                    <div class="params">
+                        <span class="param-tag">upn (user principal name)</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon green">✅</div>
+                        <h4>Enable AD Account</h4>
+                    </div>
+                    <p>Re-enable Active Directory account after incident resolution and password reset.</p>
+                    <div class="params">
+                        <span class="param-tag">upn (user principal name)</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon warning">🔑</div>
+                        <h4>Force Password Reset</h4>
+                    </div>
+                    <p>Force user to change password at next logon. Critical for credential theft incidents.</p>
+                    <div class="params">
+                        <span class="param-tag">upn (user principal name)</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin: 3rem 0 1.5rem; color: var(--text); font-size: 1.5rem;">📊 Incident Management</h3>
+            <div class="cap-grid">
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon blue">📋</div>
+                        <h4>Get Incident</h4>
+                    </div>
+                    <p>Retrieve detailed incident information including alerts, evidence, and current status.</p>
+                    <div class="params">
+                        <span class="param-tag">incident_id (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon blue">📝</div>
+                        <h4>List Incidents</h4>
+                    </div>
+                    <p>List incidents with filtering by status, severity, assigned analyst, or time range.</p>
+                    <div class="params">
+                        <span class="param-tag">status (optional)</span>
+                        <span class="param-tag">severity (optional)</span>
+                        <span class="param-tag">assigned_to (optional)</span>
+                        <span class="param-tag">top (optional)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon green">✅</div>
+                        <h4>Update Incident Status</h4>
+                    </div>
+                    <p>Mark incidents as active, resolved, or redirected with proper classification.</p>
+                    <div class="params">
+                        <span class="param-tag">incident_id (required)</span>
+                        <span class="param-tag">status: active | resolved | redirected</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon purple">👥</div>
+                        <h4>Assign Incident</h4>
+                    </div>
+                    <p>Assign incident to a specific analyst for investigation and remediation.</p>
+                    <div class="params">
+                        <span class="param-tag">incident_id (required)</span>
+                        <span class="param-tag">assigned_to (email)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon warning">🏷️</div>
+                        <h4>Classify Incident</h4>
+                    </div>
+                    <p>Set classification (True/False Positive) and determination for incident resolution.</p>
+                    <div class="params">
+                        <span class="param-tag">incident_id (required)</span>
+                        <span class="param-tag">classification</span>
+                        <span class="param-tag">determination</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon cyan">🏷️</div>
+                        <h4>Add Incident Tags</h4>
+                    </div>
+                    <p>Add custom tags to incidents for categorization and tracking.</p>
+                    <div class="params">
+                        <span class="param-tag">incident_id (required)</span>
+                        <span class="param-tag">tags (array)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon blue">💬</div>
+                        <h4>Add Incident Comment</h4>
+                    </div>
+                    <p>Add investigation notes and comments to incident timeline for documentation.</p>
+                    <div class="params">
+                        <span class="param-tag">incident_id (required)</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case Study -->
+    <section class="case-study" id="case-study">
+        <div class="container">
+            <div class="section-title">
+                <h2>Real-World Agentic Response</h2>
+                <p>How an AI agent handled a Mimikatz credential theft attack autonomously</p>
+            </div>
+            <div class="case-container">
+                <div class="case-header">
+                    <div class="case-badge">
+                        <span>🔴</span> High Severity Incident
+                    </div>
+                    <h3>Incident #171: Multi-Stage Attack on SQL Server</h3>
+                    <p>Mimikatz credential theft detected with LSASS memory dump and Defender evasion attempts</p>
+                    <div class="case-meta">
+                        <div class="case-meta-item">
+                            <span>Device:</span>
+                            <strong>vet-sql.vetoniitti.com</strong>
+                        </div>
+                        <div class="case-meta-item">
+                            <span>Risk Score:</span>
+                            <strong style="color: var(--danger);">HIGH</strong>
+                        </div>
+                        <div class="case-meta-item">
+                            <span>Alerts:</span>
+                            <strong>11 correlated alerts</strong>
+                        </div>
+                        <div class="case-meta-item">
+                            <span>User:</span>
+                            <strong>admin@vetoniitti.com</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="case-body">
+                    <!-- Phase 1: Sentinel MCP -->
+                    <div class="evidence-section">
+                        <h4>🔭 Phase 1: Threat Intelligence (Sentinel MCP)</h4>
+                        <p style="color: var(--text-muted); margin-bottom: 1rem;">The AI agent queried Sentinel to extract critical evidence and indicators:</p>
+                        <div class="evidence-grid">
+                            <div class="evidence-item danger">
+                                <label>Compromised Account</label>
+                                <code>admin@vetoniitti.com</code>
+                            </div>
+                            <div class="evidence-item warning">
+                                <label>Source IP (Internal)</label>
+                                <code>192.168.50.40</code>
+                            </div>
+                            <div class="evidence-item warning">
+                                <label>Source IP (External)</label>
+                                <code>85.76.106.83</code>
+                            </div>
+                            <div class="evidence-item">
+                                <label>Device ID</label>
+                                <code>bdc60e583c8d4ef05de010973642487bde6e1f60</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Extracted Hashes -->
+                    <div class="evidence-section">
+                        <h4>🔐 Malicious File Hashes (SHA1)</h4>
+                        <div class="evidence-grid">
+                            <div class="evidence-item danger">
+                                <label>mimikatz.exe</label>
+                                <code>040fbf1325d51358606b710bc3bd774c04bdb308</code>
+                            </div>
+                            <div class="evidence-item danger">
+                                <label>mimilib.dll</label>
+                                <code>1c6913248131b5784b923eff1e76a443f738affc</code>
+                            </div>
+                            <div class="evidence-item danger">
+                                <label>mimidrv.sys</label>
+                                <code>fe18c58fbd0a83d67920e037d522c176704d2ca3</code>
+                            </div>
+                            <div class="evidence-item danger">
+                                <label>mimikatz.exe (64-bit)</label>
+                                <code>d1f7832035c3e8a73cc78afd28cfd7f4cece6d20</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MITRE Techniques -->
+                    <div class="evidence-section">
+                        <h4>⚔️ MITRE ATT&CK Techniques</h4>
+                        <div class="mitre-tags">
+                            <span class="mitre-tag">T1003 - Credential Dumping</span>
+                            <span class="mitre-tag">T1555 - Password Stores</span>
+                            <span class="mitre-tag">T1021.001 - RDP</span>
+                            <span class="mitre-tag">T1562.001 - Disable Security Tools</span>
+                            <span class="mitre-tag">T1550.003 - Pass the Ticket</span>
+                        </div>
+                    </div>
+
+                    <!-- Response Actions -->
+                    <div class="response-section">
+                        <h4>🛡️ Phase 2: Autonomous Response (Response MCP)</h4>
+                        <div class="action-timeline">
+                            <div class="action-item selected">
+                                <h5>
+                                    🛑 Stop & Quarantine (x4 files)
+                                    <span class="status selected">EXECUTED</span>
+                                </h5>
+                                <p>Stopped all Mimikatz processes and quarantined 4 malicious files using SHA1 hashes.</p>
+                                <div class="reasoning">
+                                    <strong>AI agent reasoning:</strong> SHA1 hashes available in incident evidence. Most surgical approach to neutralize active threats without collateral impact. Each file represents an active component of the attack toolkit.
+                                </div>
+                            </div>
+
+                            <div class="action-item selected">
+                                <h5>
+                                    🔒 Restrict Code Execution
+                                    <span class="status selected">EXECUTED</span>
+                                </h5>
+                                <p>Limited execution to Microsoft-signed applications only on the SQL server.</p>
+                                <div class="reasoning">
+                                    <strong>AI agent reasoning:</strong> Hands-on-keyboard activity detected. Attacker may have additional tools staged. This blocks any further unsigned attacker tools while maintaining SQL Server operations.
+                                </div>
+                            </div>
+
+                            <div class="action-item selected">
+                                <h5>
+                                    🚫 Disable AD Account
+                                    <span class="status selected">EXECUTED</span>
+                                </h5>
+                                <p>Disabled compromised account admin@vetoniitti.com.</p>
+                                <div class="reasoning">
+                                    <strong>AI agent reasoning:</strong> Credential theft tool detected with LSASS memory access. All credentials on this account must be considered compromised. Immediate account disable prevents lateral movement.
+                                </div>
+                            </div>
+
+                            <div class="action-item selected">
+                                <h5>
+                                    🔍 Run Full Antivirus Scan
+                                    <span class="status selected">EXECUTED</span>
+                                </h5>
+                                <p>Executed full disk scan to detect any remaining or hidden malware.</p>
+                                <div class="reasoning">
+                                    <strong>AI agent reasoning:</strong> Files found in multiple locations (Downloads, Edge cache, Temp, Documents). Full scan ensures complete remediation and validates quarantine effectiveness.
+                                </div>
+                            </div>
+
+                            <div class="action-item selected">
+                                <h5>
+                                    📦 Collect Investigation Package
+                                    <span class="status selected">EXECUTED</span>
+                                </h5>
+                                <p>Gathered forensic evidence including memory dumps, event logs, and system state.</p>
+                                <div class="reasoning">
+                                    <strong>AI agent reasoning:</strong> LSASS memory access, registry modifications (disabled Real-Time Protection), and RDP sessions detected. Forensic package captures complete timeline for post-incident analysis.
+                                </div>
+                            </div>
+
+                            <div class="action-item selected">
+                                <h5>
+                                    🏷️ Classify Incident
+                                    <span class="status selected">EXECUTED</span>
+                                </h5>
+                                <p>Classified as True Positive - Multi-stage attack with automated response completion.</p>
+                                <div class="reasoning">
+                                    <strong>AI agent reasoning:</strong> Confirmed malware detected and neutralized. Response actions completed successfully. Documenting classification for compliance and metrics.
+                                </div>
+                            </div>
+
+                            <div class="action-item not-selected">
+                                <h5>
+                                    🚫 Isolate Device
+                                    <span class="status skipped">SKIPPED</span>
+                                </h5>
+                                <p>Device isolation was not performed.</p>
+                                <div class="reasoning">
+                                    <strong>AI agent reasoning:</strong> This is a <strong>SQL server</strong> - critical infrastructure. Full isolation causes immediate business disruption. Microsoft Attack Disruption already <strong>contained the compromised account</strong>, blocking lateral movement. Less disruptive actions achieved containment without database downtime.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decision Path -->
+    <section class="decision-path" id="decision-path">
+        <div class="container">
+            <div class="section-title">
+                <h2>AI Agent Decision Framework</h2>
+                <p>A prioritized approach AI agents follow for effective incident response</p>
+            </div>
+            <div class="flowchart">
+                <div class="flow-step">
+                    <div class="flow-number priority-1">1</div>
+                    <div class="flow-connector"></div>
+                    <div class="flow-content">
+                        <h3>🛑 Stop & Quarantine Malicious Files</h3>
+                        <p>When SHA1/SHA256 hashes are available in incident evidence, immediately stop processes and quarantine files. Most direct and surgical approach to neutralize active threats.</p>
+                        <div class="flow-details">
+                            <span class="flow-tag danger">Critical Priority</span>
+                            <span class="flow-tag">Requires SHA1 Hash</span>
+                            <span class="flow-tag">Immediate Effect</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number priority-2">2</div>
+                    <div class="flow-connector"></div>
+                    <div class="flow-content">
+                        <h3>👤 Disable Compromised Accounts</h3>
+                        <p>If credential theft tools detected (Mimikatz, etc.) or suspicious authentication patterns, disable affected accounts immediately to prevent lateral movement.</p>
+                        <div class="flow-details">
+                            <span class="flow-tag danger">High Priority</span>
+                            <span class="flow-tag">Blocks Lateral Movement</span>
+                            <span class="flow-tag">Identity Protection</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number priority-3">3</div>
+                    <div class="flow-connector"></div>
+                    <div class="flow-content">
+                        <h3>🔒 Restrict Code Execution</h3>
+                        <p>Limit execution to Microsoft-signed applications. Prevents attackers from running additional tools while AI agent investigates. Attacker tools are typically unsigned.</p>
+                        <div class="flow-details">
+                            <span class="flow-tag warning">High Priority</span>
+                            <span class="flow-tag">Defense in Depth</span>
+                            <span class="flow-tag">Reversible</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number priority-4">4</div>
+                    <div class="flow-content">
+                        <h3>🔍 Run Full Scan & Collect Forensics</h3>
+                        <p>Execute full disk scan to detect dormant threats. Collect investigation package for timeline reconstruction, compliance, and post-incident analysis.</p>
+                        <div class="flow-details">
+                            <span class="flow-tag">Comprehensive</span>
+                            <span class="flow-tag success">Validation Step</span>
+                            <span class="flow-tag">Forensics</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="max-width: 900px; margin: 3rem auto 0; padding: 2rem; background: var(--card); border: 1px solid var(--card-border); border-radius: 16px;">
+                <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    ⚠️ Device Isolation Decision Logic
+                </h4>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">AI agents consider device isolation when:</p>
+                <ul style="color: var(--text-muted); margin-left: 1.5rem;">
+                    <li>Active lateral movement in progress that can't be contained by identity-level actions</li>
+                    <li>Device is NOT critical infrastructure (not a DC, SQL server, or production system)</li>
+                    <li>Less disruptive actions have failed or are insufficient</li>
+                    <li>Business impact assessment allows for isolation</li>
+                </ul>
+                <p style="color: var(--text-muted); margin-top: 1rem;"><strong>AI agent tip:</strong> For critical servers, Selective isolation allows Outlook, Teams, and Skype while blocking other network traffic.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>20+</h3>
+                    <p>Response Actions</p>
+                </div>
+                <div class="stat-item">
+                    <h3>&lt;5s</h3>
+                    <p>Action Execution</p>
+                </div>
+                <div class="stat-item">
+                    <h3>2</h3>
+                    <p>Integrated MCPs</p>
+                </div>
+                <div class="stat-item">
+                    <h3>100%</h3>
+                    <p>Autonomous</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example -->
+    <section class="code-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Natural Language Commands</h2>
+                <p>Just describe what you want - AI agents handle the rest</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-dot red"></div>
+                    <div class="code-dot yellow"></div>
+                    <div class="code-dot green"></div>
+                </div>
+                <div class="code-content">
+                    <pre><span class="code-comment">// Step 1: AI agent queries Sentinel MCP</span>
+<span class="code-string">"Show me high severity incidents from the past 1h"</span>
+
+<span class="code-comment">// Sentinel MCP returns incident data:</span>
+<span class="code-keyword">Incident</span> <span class="code-number">#171</span> - Mimikatz detected on vet-sql.vetoniitti.com
+├── <span class="code-function">SHA1:</span> <span class="code-string">040fbf1325d51358606b710bc3bd774c04bdb308</span> (mimikatz.exe)
+├── <span class="code-function">SHA1:</span> <span class="code-string">1c6913248131b5784b923eff1e76a443f738affc</span> (mimilib.dll)
+├── <span class="code-function">Account:</span> admin@vetoniitti.com <span class="code-keyword">(COMPROMISED)</span>
+├── <span class="code-function">MITRE:</span> T1003 (Credential Dumping), T1562 (Disable Security)
+└── <span class="code-function">Status:</span> <span class="code-keyword">ACTIVE</span>
+
+<span class="code-comment">// Step 2: User instructs AI agent</span>
+<span class="code-string">"Respond to this incident autonomously"</span>
+
+<span class="code-comment">// AI agent uses Response MCP to execute prioritized actions:</span>
+<span class="code-number">✓</span> <span class="code-function">StopAndQuarantine</span>(sha1: <span class="code-string">"040fbf..."</span>, device: <span class="code-string">"vet-sql"</span>)
+<span class="code-number">✓</span> <span class="code-function">StopAndQuarantine</span>(sha1: <span class="code-string">"1c6913..."</span>, device: <span class="code-string">"vet-sql"</span>)
+<span class="code-number">✓</span> <span class="code-function">StopAndQuarantine</span>(sha1: <span class="code-string">"fe18c5..."</span>, device: <span class="code-string">"vet-sql"</span>)
+<span class="code-number">✓</span> <span class="code-function">DisableADAccount</span>(upn: <span class="code-string">"admin@..."</span>)
+<span class="code-number">✓</span> <span class="code-function">RestrictCodeExecution</span>(device: <span class="code-string">"vet-sql"</span>)
+<span class="code-number">✓</span> <span class="code-function">RunAntivirusScan</span>(type: <span class="code-string">"Full"</span>, device: <span class="code-string">"vet-sql"</span>)
+<span class="code-number">✓</span> <span class="code-function">CollectInvestigationPackage</span>(device: <span class="code-string">"vet-sql"</span>)
+<span class="code-number">✓</span> <span class="code-function">ClassifyIncident</span>(id: <span class="code-number">171</span>, class: <span class="code-string">"TruePositive"</span>)
+<span class="code-number">⊘</span> <span class="code-function">IsolateDevice</span> <span class="code-comment">// Skipped - SQL server, business-critical</span>
+
+<span class="code-comment">// Step 3: AI agent reports back</span>
+<span class="code-keyword">Response completed.</span> Malware neutralized, account disabled, forensics collected.
+<span class="code-keyword">Incident #171</span> classified as True Positive - Multi-stage attack.
+<span class="code-keyword">Time to remediation:</span> <span class="code-number">47 seconds</span></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>Response MCP Server — Built for Agentic Security Operations</p>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem;">Powered by Model Context Protocol • Microsoft Sentinel • Microsoft Defender XDR</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# IDE and editor files
+.vscode/
+.idea/
+
+# GitHub-specific files
+.github/
+
+# Infrastructure and deployment scripts
+infra/
+
+# Documentation and demo files
+*.html
+*.md
+!README.md
+
+# Git files
+.git/
+.gitignore
+
+# Python cache and build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Virtual environments
+.env
+.venv/
+venv/
+ENV/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -124,7 +124,7 @@ Write-Host "  2. Update VS Code mcp.json:" -ForegroundColor Gray
 Write-Host @"
      {
          "mcpServers": {
-             "response-mcp-azure": {
+             "Response MCP": {
                  "type": "sse",
                  "url": "$sseEndpoint",
                  "headers": {

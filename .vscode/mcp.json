@@ -2,7 +2,7 @@
 	"servers": {
 		"Response MCP": {
 			"type": "sse",
-			"url": "https://vetmcp-mcp.lemonsand-ed01892f.westeurope.azurecontainerapps.io/sse",
+			"url": "https://responsemcp-mcp.xxxxx-yyyy.zzzzzz.azurecontainerapps.io/sse",
 			"headers": {
 				"X-API-Key": "MCP_API_KEY"
 			}

@@ -1236,6 +1236,42 @@
                         <span class="param-tag">comment (required)</span>
                     </div>
                 </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon red">🔓</div>
+                        <h4>Revoke Entra Sessions</h4>
+                    </div>
+                    <p>Revoke all Entra ID sign-in sessions and refresh tokens. Forces re-authentication on all devices.</p>
+                    <div class="params">
+                        <span class="param-tag">upn (user principal name)</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon red">⚠️</div>
+                        <h4>Confirm User Compromised</h4>
+                    </div>
+                    <p>Mark user as compromised in Identity Protection. Sets risk level to high and triggers CA policies.</p>
+                    <div class="params">
+                        <span class="param-tag">upn (user principal name)</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
+
+                <div class="cap-card">
+                    <div class="cap-card-header">
+                        <div class="cap-icon green">✅</div>
+                        <h4>Confirm User Safe</h4>
+                    </div>
+                    <p>Dismiss user risk in Identity Protection. Sets risk level to none after confirming no compromise.</p>
+                    <div class="params">
+                        <span class="param-tag">upn (user principal name)</span>
+                        <span class="param-tag">comment (required)</span>
+                    </div>
+                </div>
             </div>
 
             <h3 style="margin: 3rem 0 1.5rem; color: var(--text); font-size: 1.5rem;">📊 Incident Management</h3>

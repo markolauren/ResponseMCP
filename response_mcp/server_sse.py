@@ -348,43 +348,43 @@ TOOLS = [
             "required": ["user_principal_name", "comment"],
         },
     ),
-    # Entra ID / Azure AD Actions (PLACEHOLDERS - Not yet supported by API)
-    # Tool(
-    #     name="revoke_entra_sessions",
-    #     description="[NOT YET AVAILABLE] Revoke all active Entra ID sessions for a user. This would invalidate all refresh tokens and require re-authentication.",
-    #     inputSchema={
-    #         "type": "object",
-    #         "properties": {
-    #             "user_principal_name": {"type": "string", "description": "User Principal Name (email) of the account"},
-    #             "comment": {"type": "string", "description": "Comment explaining why sessions are being revoked"},
-    #         },
-    #         "required": ["user_principal_name", "comment"],
-    #     },
-    # ),
-    # Tool(
-    #     name="require_entra_signin",
-    #     description="[NOT YET AVAILABLE] Require an Entra ID user to sign in again on all devices.",
-    #     inputSchema={
-    #         "type": "object",
-    #         "properties": {
-    #             "user_principal_name": {"type": "string", "description": "User Principal Name (email) of the account"},
-    #             "comment": {"type": "string", "description": "Comment explaining why re-signin is required"},
-    #         },
-    #         "required": ["user_principal_name", "comment"],
-    #     },
-    # ),
-    # Tool(
-    #     name="mark_entra_user_compromised",
-    #     description="[NOT YET AVAILABLE] Mark an Entra ID user as compromised in Identity Protection.",
-    #     inputSchema={
-    #         "type": "object",
-    #         "properties": {
-    #             "user_principal_name": {"type": "string", "description": "User Principal Name (email) of the account"},
-    #             "comment": {"type": "string", "description": "Comment explaining why user is being marked as compromised"},
-    #         },
-    #         "required": ["user_principal_name", "comment"],
-    #     },
-    # ),
+    # Identity Actions (Entra ID)
+    Tool(
+        name="revoke_entra_sessions",
+        description="Revoke all Entra ID (Azure AD) sign-in sessions and refresh tokens for a user. Forces re-authentication on all devices and applications. Use when credentials are compromised or during offboarding.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "user_principal_name": {"type": "string", "description": "User Principal Name (email) of the account (e.g., user@domain.com)"},
+                "comment": {"type": "string", "description": "Comment explaining why sessions are being revoked"},
+            },
+            "required": ["user_principal_name", "comment"],
+        },
+    ),
+    Tool(
+        name="confirm_user_compromised",
+        description="Mark an Entra ID user as compromised in Identity Protection. Sets the user's risk level to high and triggers Conditional Access policies. Use when confirmed credential compromise is detected.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "user_principal_name": {"type": "string", "description": "User Principal Name (email) of the account (e.g., user@domain.com)"},
+                "comment": {"type": "string", "description": "Comment explaining why user is being marked as compromised"},
+            },
+            "required": ["user_principal_name", "comment"],
+        },
+    ),
+    Tool(
+        name="confirm_user_safe",
+        description="Dismiss user risk in Identity Protection (mark as safe). Sets the user's risk level to none. Use after investigation confirms the user account is not compromised.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "user_principal_name": {"type": "string", "description": "User Principal Name (email) of the account (e.g., user@domain.com)"},
+                "comment": {"type": "string", "description": "Comment explaining why user is being marked as safe"},
+            },
+            "required": ["user_principal_name", "comment"],
+        },
+    ),
 ]
 
 
@@ -865,6 +865,98 @@ def handle_tool(name: str, arguments: dict[str, Any]) -> str:
             })
         except Exception as e:
             logger.exception(f"Failed to force password reset for {upn}")
+            return json.dumps({
+                "success": False,
+                "error": str(e),
+                "user_principal_name": upn,
+            })
+    
+    if name == "revoke_entra_sessions":
+        upn = arguments["user_principal_name"]
+        comment = arguments["comment"]
+        
+        try:
+            # Revoke all sign-in sessions via Graph API
+            success = graph_client.revoke_user_sign_in_sessions(upn)
+            
+            if success:
+                return json.dumps({
+                    "success": True,
+                    "action": "revoke_entra_sessions",
+                    "user_principal_name": upn,
+                    "message": f"All Entra ID sessions and refresh tokens revoked for {upn}. User will need to re-authenticate.",
+                    "comment": comment,
+                })
+            else:
+                return json.dumps({
+                    "success": False,
+                    "error": "API returned failure",
+                    "user_principal_name": upn,
+                })
+        except Exception as e:
+            logger.exception(f"Failed to revoke Entra sessions for {upn}")
+            return json.dumps({
+                "success": False,
+                "error": str(e),
+                "user_principal_name": upn,
+            })
+    
+    if name == "confirm_user_compromised":
+        upn = arguments["user_principal_name"]
+        comment = arguments["comment"]
+        
+        try:
+            # Mark user as compromised in Identity Protection
+            success = graph_client.confirm_user_compromised(upn)
+            
+            if success:
+                return json.dumps({
+                    "success": True,
+                    "action": "confirm_user_compromised",
+                    "user_principal_name": upn,
+                    "message": f"User {upn} marked as compromised in Identity Protection. Risk level set to high.",
+                    "note": "This will trigger Conditional Access policies and security alerts",
+                    "comment": comment,
+                })
+            else:
+                return json.dumps({
+                    "success": False,
+                    "error": "API returned failure",
+                    "user_principal_name": upn,
+                })
+        except Exception as e:
+            logger.exception(f"Failed to mark {upn} as compromised")
+            return json.dumps({
+                "success": False,
+                "error": str(e),
+                "user_principal_name": upn,
+            })
+    
+    if name == "confirm_user_safe":
+        upn = arguments["user_principal_name"]
+        comment = arguments["comment"]
+        
+        try:
+            # Mark user as safe in Identity Protection (dismiss risk)
+            success = graph_client.confirm_user_safe(upn)
+            
+            if success:
+                return json.dumps({
+                    "success": True,
+                    "action": "confirm_user_safe",
+                    "user_principal_name": upn,
+                    "message": f"User {upn} marked as safe in Identity Protection. Risk level set to none.",
+                    "note": "Risk has been dismissed - use after confirming no actual compromise occurred",
+                    "comment": comment,
+                })
+            else:
+                return json.dumps({
+                    "success": False,
+                    "error": "API returned failure",
+                    "user_principal_name": upn,
+                })
+        except Exception as e:
+            logger.exception(f"Failed to mark {upn} as safe")
             return json.dumps({
                 "success": False,
                 "error": str(e),

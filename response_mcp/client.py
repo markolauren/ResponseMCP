@@ -245,4 +245,90 @@ class GraphSecurityClient:
         response = self.client.request("POST", url, json=body)
         response.raise_for_status()
         return response.json()
+    
+    def revoke_user_sign_in_sessions(self, user_principal_name: str) -> bool:
+        """
+        Revoke all refresh tokens and sessions for a user (Entra ID).
+        
+        Forces the user to re-authenticate on all devices and applications.
+        This invalidates all refresh tokens issued to applications for the user.
+        
+        Args:
+            user_principal_name: The UPN of the user (e.g., user@domain.com)
+        
+        Returns:
+            bool: True if sessions were successfully revoked
+        
+        Requires: User.RevokeSessions.All permission
+        """
+        url = f"/users/{user_principal_name}/revokeSignInSessions"
+        response = self._request("POST", url)
+        # API returns {"value": true} on success
+        return response.get("value", False)
+    
+    def get_user_id_by_upn(self, user_principal_name: str) -> str:
+        """
+        Get the Entra ID user object ID from UPN.
+        
+        Args:
+            user_principal_name: The UPN of the user (e.g., user@domain.com)
+        
+        Returns:
+            str: The Entra ID object ID
+        
+        Requires: User.Read.All permission
+        """
+        url = f"/users/{user_principal_name}"
+        user = self._request("GET", url)
+        return user["id"]
+    
+    def confirm_user_compromised(self, user_principal_name: str) -> bool:
+        """
+        Mark an Entra ID user as compromised in Identity Protection.
+        
+        Sets the user's risk level to high in Entra ID Identity Protection.
+        This triggers Conditional Access policies and alerts security teams.
+        
+        Args:
+            user_principal_name: The UPN of the user (e.g., user@domain.com)
+        
+        Returns:
+            bool: True if user was successfully marked as compromised
+        
+        Requires: IdentityRiskyUser.ReadWrite.All permission
+        """
+        # First get the user's object ID
+        user_id = self.get_user_id_by_upn(user_principal_name)
+        
+        # Confirm user as compromised
+        url = "/identityProtection/riskyUsers/confirmCompromised"
+        self._request("POST", url, {"userIds": [user_id]})
+        
+        # API returns 204 No Content on success
+        return True
+    
+    def confirm_user_safe(self, user_principal_name: str) -> bool:
+        """
+        Mark an Entra ID user as safe in Identity Protection (dismiss risk).
+        
+        Sets the user's risk level to none in Entra ID Identity Protection.
+        Use this after investigation confirms no actual compromise occurred.
+        
+        Args:
+            user_principal_name: The UPN of the user (e.g., user@domain.com)
+        
+        Returns:
+            bool: True if user was successfully marked as safe
+        
+        Requires: IdentityRiskyUser.ReadWrite.All permission
+        """
+        # First get the user's object ID
+        user_id = self.get_user_id_by_upn(user_principal_name)
+        
+        # Confirm user as safe
+        url = "/identityProtection/riskyUsers/confirmSafe"
+        self._request("POST", url, {"userIds": [user_id]})
+        
+        # API returns 204 No Content on success
+        return True
 

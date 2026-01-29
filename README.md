@@ -75,16 +75,16 @@ Together, they enable end-to-end incident response: from detection and triage to
 | `get_investigation_package_uri` | Get download URL for investigation package |
 | `isolate_multiple` | Bulk isolate multiple devices |
 
-### Identity Response Actions (Defender for Identity)
+### Identity Response Actions (Defender for Identity & Entra ID)
 
-| Tool | Description | Provider | Status |
-|------|-------------|----------|--------|
-| `disable_ad_account` | Disable Active Directory account | Active Directory | ✅ Available |
-| `enable_ad_account` | Re-enable Active Directory account | Active Directory | ✅ Available |
-| `force_ad_password_reset` | Force user to change password at next logon | Active Directory | ✅ Available |
-| ~~`revoke_entra_sessions`~~ | Revoke all Entra ID sessions | Entra ID | ⏳ Not yet supported |
-| ~~`require_entra_signin`~~ | Require Entra ID user to sign in again | Entra ID | ⏳ Not yet supported |
-| ~~`mark_entra_user_compromised`~~ | Mark Entra ID user as compromised | Entra ID | ⏳ Not yet supported |
+| Tool | Description | Provider |
+|------|-------------|----------|
+| `disable_ad_account` | Disable Active Directory account | Active Directory
+| `enable_ad_account` | Re-enable Active Directory account | Active Directory
+| `force_ad_password_reset` | Force user to change password at next logon | Active Directory
+| `revoke_entra_sessions` | Revoke all Entra ID sessions and refresh tokens | Entra ID
+| `confirm_user_compromised` | Mark user as compromised in Identity Protection | Entra ID
+| `confirm_user_safe` | Dismiss user risk (mark as safe) in Identity Protection | Entra ID
 
 ### Incident Management
 
@@ -138,22 +138,13 @@ Together, they enable end-to-end incident response: from detection and triage to
 
 | Permission | Type | Description |
 |------------|------|-------------|
-| `Machine.ReadWrite.All` | Application | Read machine actions and get investigation package URIs |
-| `Machine.Isolate` | Application | Isolate/release machines |
-| `Machine.Scan` | Application | Run antivirus scans |
-| `Machine.StopAndQuarantine` | Application | Stop and quarantine files |
-| `Machine.RestrictExecution` | Application | Restrict/unrestrict code execution |
-| `Machine.CollectForensics` | Application | Collect investigation packages |
-
-#### Microsoft Graph API
-
-| Permission | Type | Description |
-|------------|------|-------------|
 | `SecurityAlert.ReadWrite.All` | Application | Read and update security alerts |
 | `SecurityIdentitiesAccount.Read.All` | Application | Read identity accounts from MDI |
 | `SecurityIdentitiesActions.ReadWrite.All` | Application | Invoke actions on identity accounts |
 | `SecurityIncident.ReadWrite.All` | Application | Read and update security incidents |
-| `User.Read.All` | Application | Resolve UPNs to user IDs (optional) |
+| `User.Read.All` | Application | Resolve UPNs to user IDs |
+| `User.RevokeSessions.All` | Application | Revoke user sessions |
+| `IdentityRiskyUser.ReadWrite.All` | Application | Mark users as compromised in Identity Protection |
 
 ### 2. Azure Subscription
 

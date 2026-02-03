@@ -206,38 +206,6 @@ TOOLS = [
         },
     ),
     Tool(
-        name="get_incident",
-        description="Get detailed information about a security incident by ID. Returns incident details including status, severity, classification, alerts, and timeline.",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "incident_id": {"type": "string", "description": "The incident ID (numeric string)"}
-            },
-            "required": ["incident_id"],
-        },
-    ),
-    Tool(
-        name="list_incidents",
-        description="List security incidents with optional filtering. Can filter by status, severity, or time range.",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "enum": ["active", "resolved", "redirected"],
-                    "description": "Filter by incident status"
-                },
-                "severity": {
-                    "type": "string",
-                    "enum": ["informational", "low", "medium", "high"],
-                    "description": "Filter by severity level"
-                },
-                "top": {"type": "integer", "description": "Maximum number of results (default 50, max 100)"},
-                "assigned_to": {"type": "string", "description": "Filter by assigned analyst email"},
-            },
-        },
-    ),
-    Tool(
         name="update_incident_status",
         description="Update the status of a security incident. Use this to mark incidents as active, resolved, or redirected.",
         inputSchema={
@@ -636,59 +604,6 @@ def handle_tool(name: str, arguments: dict[str, Any]) -> str:
     # Incident management tools (Graph Security API)
     
     graph_client = get_graph_client()
-    
-    if name == "get_incident":
-        incident_id = arguments["incident_id"]
-        incident = graph_client.get_incident(incident_id)
-        return json.dumps({
-            "success": True,
-            "incident": {
-                "id": incident.get("id"),
-                "display_name": incident.get("displayName"),
-                "status": incident.get("status"),
-                "severity": incident.get("severity"),
-                "classification": incident.get("classification"),
-                "determination": incident.get("determination"),
-                "assigned_to": incident.get("assignedTo"),
-                "created": incident.get("createdDateTime"),
-                "last_updated": incident.get("lastUpdateDateTime"),
-                "alert_count": len(incident.get("alerts", [])),
-                "custom_tags": incident.get("customTags", []),
-                "incident_url": incident.get("incidentWebUrl"),
-            }
-        })
-    
-    if name == "list_incidents":
-        filters = []
-        if "status" in arguments:
-            filters.append(f"status eq '{arguments['status']}'")
-        if "severity" in arguments:
-            filters.append(f"severity eq '{arguments['severity']}'")
-        if "assigned_to" in arguments:
-            filters.append(f"assignedTo eq '{arguments['assigned_to']}'")
-        
-        filter_query = " and ".join(filters) if filters else None
-        top = arguments.get("top", 50)
-        
-        incidents = graph_client.list_incidents(top=min(top, 100), filter_query=filter_query)
-        
-        formatted = []
-        for inc in incidents:
-            formatted.append({
-                "id": inc.get("id"),
-                "display_name": inc.get("displayName"),
-                "status": inc.get("status"),
-                "severity": inc.get("severity"),
-                "assigned_to": inc.get("assignedTo"),
-                "created": inc.get("createdDateTime"),
-                "classification": inc.get("classification"),
-            })
-        
-        return json.dumps({
-            "success": True,
-            "count": len(formatted),
-            "incidents": formatted,
-        })
     
     if name == "update_incident_status":
         incident_id = arguments["incident_id"]

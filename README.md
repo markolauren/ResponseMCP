@@ -90,8 +90,6 @@ Together, they enable end-to-end incident response: from detection and triage to
 
 | Tool | Description |
 |------|-------------|
-| `get_incident` | Get incident details by ID |
-| `list_incidents` | List incidents with filtering |
 | `update_incident_status` | Mark incident as active/resolved |
 | `assign_incident` | Assign incident to analyst |
 | `classify_incident` | Set classification (TP/FP) and determination |
